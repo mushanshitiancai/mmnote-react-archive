@@ -1,0 +1,51 @@
+{
+  "name": "mmnote",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.0.0-beta.17",
+    "css-loader": "^0.26.1",
+    "electron-connect": "^0.6.1",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.4",
+    "less": "^2.7.2",
+    "source-map-loader": "^0.1.5",
+    "style-loader": "^0.13.1",
+    "typescript": "^2.1.4",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2",
+    "webpack-stream": "^3.2.0"
+  },
+  "dependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/codemirror": "0.0.37",
+    "@types/electron": "^1.4.31",
+    "@types/fs-extra": "0.0.37",
+    "@types/mocha": "^2.2.37",
+    "@types/mz": "0.0.30",
+    "@types/react": "0.0.0",
+    "@types/react-dom": "^0.14.20",
+    "@types/react-split-pane": "^0.1.5",
+    "chai": "^3.5.0",
+    "codemirror": "^5.22.0",
+    "electron": "^1.4.13",
+    "fs-extra": "^1.0.0",
+    "gulp-mocha": "^3.0.1",
+    "gulp-sourcemaps": "^2.4.0",
+    "lodash": "^4.17.4",
+    "mocha": "^3.2.0",
+    "mz": "^2.6.0",
+    "normalize.css": "^5.0.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-split-pane": "^0.1.57"
+  }
+}

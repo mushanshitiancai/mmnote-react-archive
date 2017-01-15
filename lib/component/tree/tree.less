@@ -1,0 +1,54 @@
+.tree {
+    list-style: none;
+    background-color: #1E1E1E;
+    width: max-content;
+    color: #EBEBEB;
+    margin: 0;
+    padding: 10px 5px 10px 5px;
+    font-size: 1em;
+    font-family: 'BlinkMacSystemFont', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+    .tree-item {
+        line-height: 2em;
+        &.container {
+            padding-left: 17px;
+        }
+        &.single {
+            padding-left: 17px;
+            margin-left: 17px;
+        }
+        &.selected > .tree-item-header{
+            color: red;
+        }
+        .tree-item-header {
+            .fa {
+                &::before {
+                    color: #929292;
+                    margin-right: 5px;
+                    font-size: 16px;
+                    width: 12px;
+                    height: 12px;
+                    display: inline-block;
+                    line-height: 1;
+                    text-align: center;
+                }
+            }
+            .toggle {
+                &::before {}
+            }
+            .icon {
+                margin-right: 5px;
+            }
+            .name{
+                // display: inline-block;
+            }
+        }
+        .tree-item-children {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+    }
+}
