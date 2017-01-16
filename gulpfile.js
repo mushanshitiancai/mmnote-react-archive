@@ -6,6 +6,7 @@ var webpack = require('webpack-stream');
 var mocha = require('gulp-mocha');
 var ts = require("gulp-typescript");
 var sourcemaps = require('gulp-sourcemaps');
+var del = require('del');
 var tsProject = ts.createProject("tsconfig.json");
 var p = require('path');
 
@@ -32,7 +33,11 @@ gulp.task('webpack', function () {
         .pipe(gulp.dest("./dist"))
 });
 
-gulp.task('typescriptForTest', function () {
+gulp.task('clean-test', function (done) {
+    return del('./test-out');
+});
+
+gulp.task('typescriptForTest', ['clean-test'],function () {
     return gulp.src(["./lib/**/*.ts*", "./test/**/*.ts"], { base: "./" })
         .pipe(sourcemaps.init())
         .pipe(tsProject()).js
@@ -44,7 +49,12 @@ gulp.task('typescriptForTest', function () {
         .pipe(gulp.dest("test-out/"));
 });
 
-gulp.task('test', ['typescriptForTest'], function () {
+gulp.task('copy-test-res', ['clean-test'],function () {
+    return gulp.src(['./test/res/**/*'], { base: './' })
+        .pipe(gulp.dest('./test-out'));
+});
+
+gulp.task('test', ['copy-test-res', 'typescriptForTest'], function () {
     return gulp.src('./test-out/**/*.spec.js')
         .pipe(mocha());
 });
