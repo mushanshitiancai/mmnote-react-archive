@@ -6,10 +6,12 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "node_modules": true,
-        "dist": true,
-        "test-out": true
+        // "dist": true,
+        "test-out": true,
+        ".idea":true
     },
     "search.exclude": {
+        "**/.idea":true,
         "**/node_modules": true,
         "**/bower_components": true,
         "**/dist": true,

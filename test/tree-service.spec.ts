@@ -1,31 +1,31 @@
-import { TreeService,Node } from './../lib/service/tree-service';
+import { FSTreeService, FSNode } from './../src/render/service/tree-service';
 import * as chai from 'chai';
 const expect = chai.expect;
 import * as p from 'path';
 
-function setup(){
+function setup() {
 
-    const demoFolderPath = p.join(__dirname,'res','demo-folder')
+    const demoFolderPath = p.join(__dirname, 'res', 'demo-folder')
     return {
-        service: new TreeService(),
+        service: FSTreeService,
         demoFolderPath: demoFolderPath,
-        demoFolderTopNodes: [p.join(demoFolderPath,'folder1'),p.join(demoFolderPath,'file1.md')]
+        demoFolderTopNodes: [p.join(demoFolderPath, 'folder1'), p.join(demoFolderPath, 'file1.md')]
     }
 }
 
-describe("TreeService",function(){
+describe("TreeService", function () {
 
-    it('readSubNode',function(done){
-        const {service,demoFolderPath,demoFolderTopNodes} = setup();
+    it('readSubNode', function (done) {
+        const {service, demoFolderPath, demoFolderTopNodes} = setup();
 
-       service.readSubNode(new Node(demoFolderPath,null),node => {
-        //    console.log('single call back = ' + node);
-           expect(node.path).to.be.oneOf(demoFolderTopNodes)
-       },node => {
-        //    console.log('finish = ' + node);
-           expect(node.path).to.be.equal(demoFolderPath);
-           expect(node.children.length).to.be.equal(demoFolderTopNodes.length);
-           done();
-       });
+        service.getSubNode(new FSNode(demoFolderPath, null), node => {
+            //    console.log('single call back = ' + node);
+            expect(node.path).to.be.oneOf(demoFolderTopNodes)
+        }, node => {
+            //    console.log('finish = ' + node);
+            expect(node.path).to.be.equal(demoFolderPath);
+            expect(node.children.length).to.be.equal(demoFolderTopNodes.length);
+            done();
+        });
     });
 });

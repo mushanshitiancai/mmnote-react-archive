@@ -12,6 +12,8 @@
         "dist"
     ],
     "include": [
-        "./**/*"
+        "./src/main/**/*",
+        "./src/common/**/*",
+        "./test/**/*"
     ]
 }

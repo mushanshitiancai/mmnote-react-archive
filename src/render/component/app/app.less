@@ -1,0 +1,33 @@
+.app {
+    font-size: 12px;
+    .left {
+        background-color: #1E1E1E;
+        height: 100%;
+        overflow: scroll;
+    }
+    .right {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .Pane.vertical.Pane2{
+        overflow: hidden;
+    }
+}
+
+.app ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.app ::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    border: 3px solid #1E1E1E;
+    background: #353b45;
+    background-clip: content-box;
+}
+.app ::-webkit-scrollbar-track{
+    display: none;
+}
+.app ::-webkit-scrollbar-corner{
+    display: none;
+}
