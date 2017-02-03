@@ -1,15 +1,28 @@
-import { App } from '../component/app/app';
-import { logger } from '../../common/logger';
+import { getCurrentDocument } from '../store/state';
+import { openAction, saveAction } from '../action/action';
 import { ipcRenderer, remote } from 'electron';
 const dialog = remote.dialog;
 const BrowserWindow = remote.BrowserWindow;
+import { Store } from 'redux';
+import { Map } from 'immutable';
+
+import { App } from '../component/app/app';
+import { logger } from '../../common/logger';
+
+declare module 'redux' {
+    interface Dispatch<S> {
+        (action: any): any;
+    }
+}
 
 export class CommandExecutor {
     [key: string]: any;
     private app: App;
+    private store: Store<Map<string, any>>;
 
-    constructor(app: App) {
+    constructor(app: App, store: Store<any>) {
         this.app = app;
+        this.store = store;
 
         ipcRenderer.on('command', (event, command, args) => {
             this.execCommand(command, args);
@@ -26,18 +39,22 @@ export class CommandExecutor {
     }
 
     open() {
-        // this.app.open(["/Users/mazhibin/project/blog/blog/source/_posts/java"]);
-        
-
         dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
             properties: ['openFile', 'openDirectory']
         }, (filenames) => {
             logger.info(`CommandExecutor - open filenames=${filenames}`);
-            this.app.open(filenames);
+            if (filenames) {
+                this.store.dispatch(openAction(filenames[0]));
+            }
         });
     }
 
-    save(){
-        
+    save() {
+        let state = this.store.getState();
+        let doc = getCurrentDocument(state);
+
+        if (doc) {
+            this.store.dispatch(saveAction(doc.get('path'), doc.get('data')));
+        }
     }
 }

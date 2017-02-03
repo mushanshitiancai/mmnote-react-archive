@@ -50,10 +50,8 @@ gulp.task('main-w', ['main-res', 'main'], function () {
 function webpackTask(watch, cb) {
     var compiler = webpack(_.merge(webpackConfig, { watch: watch }), function (err, stats) {
         console.log(`webpack callback err=${err}`);
-        // if (err) throw new gutil.PluginError("webpack", err);
-        // gutil.log("[webpack]", stats.toString({
-        //     
-        // }));
+        if (err) throw new gutil.PluginError("webpack", err);
+        gutil.log("[webpack]", stats.toString("minimal"));
         if (cb) cb();
     });
 

@@ -6,7 +6,8 @@ module.exports = {
     output: {
         path: path.join(__dirname, "dist"),
         filename: 'bundle.js',
-        publicPath: "/assets/"
+        publicPath: "/assets/",
+        // sourcePrefix: ''
     },
 
     // Enable sourcemaps for debugging webpack's output.
@@ -25,7 +26,7 @@ module.exports = {
             { test: /\.less$/, loaders: ["style-loader", "css-loader?sourceMap", "less-loader"] },
             { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
             { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
-            { test: /\.json$/, loader: 'json-loader'},
+            { test: /\.json$/, loader: 'json-loader' },
         ],
 
         preLoaders: [

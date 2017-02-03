@@ -1,17 +1,22 @@
+import { openAction } from '../../action/action';
+import * as React from 'react';
+import { remote, ipcRenderer } from 'electron';
+import * as SplitPane from 'react-split-pane';
+import * as fs from 'fs';
+import { Store } from 'redux';
+
+import { EditorContainer } from '../../container/editor-container';
 import { CommandExecutor } from '../../service/command-executor';
 import { logger } from '../../../common/logger';
 import { Tree, TreeNode } from '../tree/tree';
-import * as React from 'react';
 import { FSNode, FSTreeService } from '../../service/tree-service';
-import { remote, ipcRenderer } from 'electron';
-import * as SplitPane from 'react-split-pane';
-import { Editor } from '../editor/editor'
-import * as fs from 'fs';
+
 import './app.less';
 import './resizer.less';
 
 interface AppProps {
     path?: string;
+    store: Store<any>
 }
 
 interface AppState {
@@ -22,13 +27,13 @@ interface AppState {
 export class App extends React.Component<AppProps, AppState>{
 
     private commandExecutor: CommandExecutor;
-    public editor:Editor;
 
     constructor(props: AppProps) {
         super(props);
+        // console.log("App constructor", this.props, this.context);
 
         // init dep
-        this.commandExecutor = new CommandExecutor(this);
+        this.commandExecutor = new CommandExecutor(this,this.props.store);
 
         if (props.path) {
             let curNode = new TreeNode(FSTreeService.getNode(this.props.path));
@@ -44,9 +49,10 @@ export class App extends React.Component<AppProps, AppState>{
     }
 
     open(paths: string[]) {
-        this.setState({
-            curFolders: [new TreeNode(FSTreeService.getNode(paths[0]))]
-        });
+        // this.setState({
+        //     curFolders: [new TreeNode(FSTreeService.getNode(paths[0]))]
+        // });
+        this.props.store.dispatch(openAction(paths[0]));
     }
 
     onTreeItemClick = (item: TreeNode) => {
@@ -74,14 +80,15 @@ export class App extends React.Component<AppProps, AppState>{
 
     render() {
         return <div className="app">
-            <SplitPane split="vertical" minSize={50} defaultSize={200}>
+            <EditorContainer />
+            {/*<SplitPane split="vertical" minSize={50} defaultSize={200}>
                 <div className="left">
                     <Tree items={this.state.curFolders} onItemClick={this.onTreeItemClick}>app</Tree>
                 </div>
                 <div className="right">
-                    <Editor content={this.state.curContent}/>
+                    <EditorContainer />
                 </div>
-            </SplitPane>
+            </SplitPane>*/}
         </div>
     }
 }
