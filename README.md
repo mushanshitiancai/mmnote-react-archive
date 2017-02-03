@@ -1,0 +1,2 @@
+# mmnote
+a note
