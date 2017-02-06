@@ -30,15 +30,14 @@ CodeMirror.defineExtension('registerPasteImage', function () {
             if (success !== false) {
                 clipboardEvent.preventDefault();
                 cm.getDoc().replaceSelection(`![](${path})`);
-
-                let img = document.createElement('img');
-                img.src = "file://" + path;
-                cm.operation(() => {
-                    cm.addLineWidget(cm.getDoc().getCursor().line,
-                        img, {
-                            handleMouseEvents: true
-                        } as any);
-                })
+                // let img = document.createElement('img');
+                // img.src = "file://" + path;
+                // cm.operation(() => {
+                //     cm.addLineWidget(cm.getDoc().getCursor().line,
+                //         img, {
+                //             handleMouseEvents: true
+                //         } as any);
+                // })
             }
         })
     });

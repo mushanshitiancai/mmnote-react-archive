@@ -15,6 +15,7 @@ import 'codemirror/mode/javascript/javascript.js';
 import './extension/doc-meta';
 import './extension/swap-doc-by-url';
 import './extension/paste-image';
+import './extension/auto-preview';
 
 declare module 'codemirror' {
     interface Editor {
@@ -54,6 +55,11 @@ export class Editor extends React.Component<EditorProps, undefined>{
         this.codeMirror.on('change', (instance, change) => {
             this.props.onChange(this.codeMirror.getValue());
             // logger.info("editor on change", change, instance.getValue());
+
+            let count = this.codeMirror.getDoc().lineCount();
+            for (let i = 0; i < count; i++) {
+                this.codeMirror.mmAutoPreview(i);
+            }
         });
 
         this.codeMirror.registerPasteImage();
