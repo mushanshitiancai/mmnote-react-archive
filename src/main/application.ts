@@ -1,5 +1,5 @@
 import constant from '../common/constant';
-import { ApplicationMenu } from './menu';
+import { ApplicationMenu } from './application-menu';
 import { Window } from './window';
 import { app, ipcMain, BrowserWindow } from 'electron';
 

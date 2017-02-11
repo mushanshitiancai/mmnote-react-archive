@@ -1,5 +1,6 @@
 dist/
 test-out/
 node_modules/
+package/
 
 .idea/

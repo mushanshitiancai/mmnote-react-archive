@@ -21,5 +21,6 @@ class Logger {
 export let logger = {
     info: console.log,
     error: console.log,
-    ui: console.log
+    ui: console.log,
+    // ui: (...params) => {}
 };

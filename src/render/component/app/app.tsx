@@ -46,6 +46,8 @@ export class App extends React.Component<AppProps, AppState>{
                 curFolders: []
             }
         }
+
+        this.props.store.dispatch(openAction('/Users/mazhibin/project/xxx/demonote/hehe.md'));
     }
 
     open(paths: string[]) {

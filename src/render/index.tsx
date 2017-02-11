@@ -13,11 +13,14 @@ import { store } from './store/store';
 import 'normalize.css/normalize.css';
 // import 'font-awesome/css/font-awesome.css'
 
+(window as any)['store'] = store;
+// store.dispatch({type:"ACT_EDITOR_UPDATE",payload:"ad"})
+
 ReactDOM.render(
     <Provider store={store}>
         <div>
             <App store={store} path="/Users/mazhibin/project/xxx/demonote"></App>
-            <DevTools />
+            {/*<DevTools />*/}
         </div>
     </Provider>,
     document.getElementById("root")

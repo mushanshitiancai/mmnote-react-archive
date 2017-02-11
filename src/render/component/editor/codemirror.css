@@ -339,3 +339,30 @@ div.CodeMirror-dragcursors {
 
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext { background: none; }
+
+.img{
+  border: 1px solid #ddd;
+  mix-blend-mode: darken;
+}
+
+/* -- */
+
+.CodeMirror .CodeMirror-code .cm-header-1 {
+    font-size: 200%;
+    line-height: 200%;
+}
+
+.CodeMirror .CodeMirror-code .cm-header-2 {
+    font-size: 160%;
+    line-height: 160%;
+}
+
+.CodeMirror .CodeMirror-code .cm-header-3 {
+    font-size: 125%;
+    line-height: 125%;
+}
+
+.CodeMirror .CodeMirror-code .cm-header-4 {
+    font-size: 110%;
+    line-height: 110%;
+}

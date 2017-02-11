@@ -2,7 +2,7 @@ import { Map, fromJS } from 'immutable';
 
 export type RootStateType = Map<string, any>;
 
-let data = `hello
+let data = `## hello
 functionx
 `
 
@@ -22,7 +22,8 @@ export const initState = {
         options: {
             mode: 'gfm',
             // theme: 'base-16-light'
-            theme: 'default'
+            theme: 'default',
+            extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
         }
     }
 };

@@ -50,8 +50,7 @@ const _template: CommandMenuItemOptions[] = [
             },
             {
                 "label": "Quit MMNote",
-                "command": "quit",
-                "accelerator": "CmdOrCtrl+Q",
+                "role": "quit",
             }
         ]
     },

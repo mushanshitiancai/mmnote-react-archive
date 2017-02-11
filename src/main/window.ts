@@ -3,9 +3,6 @@ const path = require('path')
 const url = require('url')
 
 import { app, BrowserWindow } from 'electron';
-var client = require('electron-connect').client;
-
-
 
 export class Window {
     win: Electron.BrowserWindow;
@@ -20,7 +17,10 @@ export class Window {
         }));
 
         // electron-connect
-        client.create(this.win);
+        if (process.env.NODE_ENV === constant.env.nodeEnv.development) {
+            var client = require('electron-connect').client;
+            client.create(this.win);
+        }
 
         // this.win.webContents.openDevTools();
 
@@ -31,7 +31,7 @@ export class Window {
 
     execCommand(command: string, parameters: any) {
         console.log(`Window execCommand - ${command} params: %{parameters}`);
-        this.win.webContents.send("command",command,parameters);
+        this.win.webContents.send("command", command, parameters);
     }
 
 }

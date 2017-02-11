@@ -7,6 +7,10 @@ declare module 'codemirror' {
     interface Editor {
         registerPasteImage(): void;
     }
+
+    interface Editor {
+        on(eventName: 'paste', handler: (instance: CodeMirror.Editor, event: ClipboardEvent) => void): void;
+    }
 }
 
 function genImagePath(doc: CodeMirror.Doc): string {
@@ -30,6 +34,7 @@ CodeMirror.defineExtension('registerPasteImage', function () {
             if (success !== false) {
                 clipboardEvent.preventDefault();
                 cm.getDoc().replaceSelection(`![](${path})`);
+                
                 // let img = document.createElement('img');
                 // img.src = "file://" + path;
                 // cm.operation(() => {

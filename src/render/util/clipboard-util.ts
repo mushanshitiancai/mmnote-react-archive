@@ -6,7 +6,7 @@ import { fsp } from './fs-promise';
 
 export class ClipboardUtil {
 
-    static saveImageToFile(path: string): Promise<void | boolean> {
+    static saveImageToFile0(path: string): Promise<void | boolean> {
         let img = clipboard.readImage();
 
         if (img && !img.isEmpty()) {
@@ -30,7 +30,7 @@ export class ClipboardUtil {
         return Promise.resolve(false);
     }
 
-    static saveImageToFile2(path: string, clipboardEvent?: ClipboardEvent): Promise<void | boolean> {
+    static saveImageToFile(path: string, clipboardEvent?: ClipboardEvent): Promise<void | boolean> {
         if (clipboardEvent && clipboardEvent.clipboardData && clipboardEvent.clipboardData.items) {
             let items = clipboardEvent.clipboardData.items
             if (items.length >= 1) {

@@ -2,12 +2,19 @@ import * as CodeMirror from 'codemirror';
 
 declare module 'codemirror' {
     interface Editor {
-        swapDocByUrl(url: string, content?: string): void;
-        mmDocMap: Map<string,any>;
+        swapDocByUrl({url, content, newDocSwapCallback}: SwapDocByUrlParam): void;
+        mmDocMap: Map<string, any>;
     }
 }
 
-CodeMirror.defineExtension('swapDocByUrl', function (url: string, content?: string) {
+interface SwapDocByUrlParam {
+    url: string;
+    mode: string;
+    content?: string;
+    newDocSwapCallback?: (cm: CodeMirror.Editor, doc: CodeMirror.Doc) => void
+}
+
+CodeMirror.defineExtension('swapDocByUrl', function ({url, mode, content, newDocSwapCallback}: SwapDocByUrlParam) {
     let cm: CodeMirror.Editor = this;
 
     if (!cm.mmDocMap) {
@@ -24,9 +31,13 @@ CodeMirror.defineExtension('swapDocByUrl', function (url: string, content?: stri
             cm.getDoc().setValue(content);
         }
     } else {
-        let newDoc = CodeMirror.Doc(content ? content : '');
+        let newDoc = CodeMirror.Doc(content ? content : '', mode);
         newDoc.mmSetURL(url);
-        cm.mmDocMap.set(url,newDoc);
+        cm.mmDocMap.set(url, newDoc);
         cm.swapDoc(newDoc);
+
+        if (newDocSwapCallback instanceof Function) {
+            newDocSwapCallback(cm, newDoc);
+        }
     }
 })
