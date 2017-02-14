@@ -1,9 +1,9 @@
-import { initStateMap } from './state';
+import { AppState } from './state';
 import { createStore, compose, applyMiddleware } from 'redux';
 import { Iterable } from 'immutable';
 import thunkMiddleware from 'redux-thunk'
 import * as createLogger from 'redux-logger'
-import DevTools from '../container/dev-tools';
+import DevTools from '../../container/dev-tools';
 
 import { reducer } from '../reducer/reducer';
 
@@ -15,11 +15,11 @@ const loggerMiddleware = createLogger({ stateTransformer });
 
 export const store = createStore(
     reducer,
-    initStateMap,
+    AppState.initState,
     compose(
         applyMiddleware(
             thunkMiddleware,
-            // loggerMiddleware
+            loggerMiddleware
         ),
         // DevTools.instrument()
     )

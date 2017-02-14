@@ -1,3 +1,4 @@
+import { AppState, StateType } from '../../redux/store/state';
 import { ClipboardUtil } from '../../util/clipboard-util';
 import { FileUtil } from '../../util/file-util';
 import { logger } from '../../../common/logger';
@@ -19,9 +20,7 @@ import './extension/paste-image';
 import './extension/auto-preview';
 
 export interface EditorProps {
-    url?:string;
-    content?:string;
-    options?: CodeMirror.EditorConfiguration;
+    doc?: StateType;
     onChange?: (content: string) => void;
 }
 
@@ -31,6 +30,7 @@ export class Editor extends React.Component<EditorProps, undefined>{
 
     constructor(props: EditorProps) {
         super(props);
+        let a: [any];
     }
 
     shouldComponentUpdate(nextProps: EditorProps, nextState: undefined, nextContext: any): boolean {
@@ -38,12 +38,12 @@ export class Editor extends React.Component<EditorProps, undefined>{
     }
 
     componentWillReceiveProps(nextProps: EditorProps, nextContext: any) {
-        // logger.ui(`Editor:componentWillReceiveProps nextProps=${nextProps} nextContext=${nextContext}`, nextProps, nextContext);
+        // logger.ui/(`Editor:componentWillReceiveProps nextProps=${nextProps} nextContext=${nextContext}`, nextProps, nextContext);
 
         this.codeMirror.swapDocByUrl({
-            url: nextProps.url,
-            mode: this.props.options.mode,
-            content: nextProps.content,
+            url: AppState.docCursor(nextProps.doc).getCurrentDocUrl(),
+            mode: 'gfm',
+            content: AppState.docCursor(nextProps.doc).getCurrentDocContent(),
             newDocSwapCallback: (cm, doc) => {
                 cm.mmAutoPreview();
             }
@@ -51,13 +51,14 @@ export class Editor extends React.Component<EditorProps, undefined>{
     }
 
     componentDidMount() {
-        this.codeMirror = CodeMirror.fromTextArea(this.refs["textarea"] as HTMLTextAreaElement, this.props.options);
-        (window as any)['cm'] = this.codeMirror;
-
-        if (this.props.content) {
-            this.codeMirror.setValue(this.props.content);
-            this.codeMirror.mmAutoPreview();
+        let options: {
+            mode: 'gfm',
+            // theme: 'base-16-light'
+            theme: 'default',
+            extraKeys: { "Enter": "newlineAndIndentContinueMarkdownList" }
         }
+        this.codeMirror = CodeMirror.fromTextArea(this.refs["textarea"] as HTMLTextAreaElement, options);
+        (window as any)['cm'] = this.codeMirror;
 
         this.codeMirror.on('change', (instance, change) => {
             this.props.onChange(this.codeMirror.getValue());

@@ -8,7 +8,7 @@ import DevTools from './container/dev-tools';
 
 import { App } from './component/app/app';
 import { logger } from '../common/logger';
-import { store } from './store/store';
+import { store } from './redux/store/store';
 
 import 'normalize.css/normalize.css';
 // import 'font-awesome/css/font-awesome.css'

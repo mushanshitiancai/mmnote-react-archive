@@ -1,5 +1,5 @@
-import { getCurrentDocument } from '../store/state';
-import { openAction, saveAction } from '../action/action';
+import { AppState } from '../redux/store/state';
+import { openAction, saveAction } from '../redux/action/action';
 import { ipcRenderer, remote } from 'electron';
 const dialog = remote.dialog;
 const BrowserWindow = remote.BrowserWindow;
@@ -51,10 +51,10 @@ export class CommandExecutor {
 
     save() {
         let state = this.store.getState();
-        let doc = getCurrentDocument(state);
+        let docCursor = AppState.docCursor(state);
 
-        if (doc) {
-            this.store.dispatch(saveAction(doc.get('path'), doc.get('data')));
+        if (docCursor) {
+            this.store.dispatch(saveAction(docCursor.getCurrentDocUrl(), docCursor.getCurrentDocContent()));
         }
     }
 }

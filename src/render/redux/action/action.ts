@@ -16,8 +16,8 @@ export function openAction(path: string) {
             } else {
                 dispath({
                     type: ACT_OPEN_SUCCESS, payload: {
-                        path: path,
-                        data: data
+                        url: path,
+                        content: data
                     }
                 });
             }

@@ -1,6 +1,8 @@
+import { URLUtil } from '../../../util/url-util';
 import * as CodeMirror from 'codemirror';
 import isUrl = require('is-url');
 import * as p from 'path';
+import * as $ from 'jquery';
 
 declare module 'codemirror' {
     interface Editor {
@@ -11,7 +13,43 @@ declare module 'codemirror' {
     }
 }
 
-const regex = /!\[([^\]]*)\]\(([\(\)\[\]-a-zA-Z0-9@:%_\+~#=\.\\\/ ]+\.(jpg|jpeg|png|gif|svg))(\s("|')([-a-zA-Z0-9@:%_\+~#=\.\/! ]*)("|')\s?)?\)/gi;
+const AutoPreviewConf = {
+    img: {
+        regex: /!\[([^\]]*)\]\(([\(\)\[\]-a-zA-Z0-9@:%_\+~#=\.\\\/ ]+\.(jpg|jpeg|png|gif|svg))(\s("|')([-a-zA-Z0-9@:%_\+~#=\.\/! ]*)("|')\s?)?\)/gi,
+        createMarker: function (doc: CodeMirror.Doc, match: RegExpExecArray | null, from: CodeMirror.Position, to: CodeMirror.Position) {
+            // TODO deal link
+            let link = match[2];
+            if(!isUrl(link)){
+               link = URLUtil.pathToURL(link);
+            }
+
+            let img = $('<img/>', {
+                class: 'cm-img',
+                src: link
+            });
+
+            let cursor = doc.getCursor();
+            let marker = doc.markText(from, to, {
+                replacedWith: img.get(0)
+            });
+
+            img.on('load', () => {
+                marker.changed();
+            });
+
+            img.on('error', (e) => {
+                e.preventDefault();
+                marker.clear();
+
+                marker = doc.markText(from, to, {
+                    className: "cm-error"
+                });
+                doc.setCursor(cursor);
+            });
+
+        }
+    }
+}
 
 CodeMirror.defineExtension('mmAutoPreview', function (line?: CodeMirror.LineHandle | number): void {
     let cm = this as CodeMirror.Editor;
@@ -35,7 +73,7 @@ CodeMirror.defineExtension('mmAutoPreview', function (line?: CodeMirror.LineHand
         let match: RegExpExecArray | null;
         let lineNumber = doc.getLineNumber(lineHandle);
 
-        while ((match = regex.exec(lineHandle.text)) !== null) {
+        while ((match = AutoPreviewConf.img.regex.exec(lineHandle.text)) !== null) {
             let from = {
                 line: lineNumber,
                 ch: match.index
@@ -50,45 +88,7 @@ CodeMirror.defineExtension('mmAutoPreview', function (line?: CodeMirror.LineHand
                 continue;
             }
 
-            // create element
-            let link = match[2];
-
-
-            let element = document.createElement('img');
-            element.classList.add('img');
-
-            if (isUrl(link)) {
-                element.src = link;
-            } else {
-                element.src = 'file://' + link;
-            }
-
-            let marker: CodeMirror.TextMarker;
-            let cursor = doc.getCursor();
-
-            marker = doc.markText(from, to, {
-                    replacedWith: element,
-                    handleMouseEvents: true
-                });
-
-            element.addEventListener("load", () => {
-                console.log('on load');
-                // marker = doc.markText(from, to, {
-                //     replacedWith: element,
-                //     handleMouseEvents: true
-                // });
-                marker.changed();
-            });
-
-            element.addEventListener("error", () => {
-                console.log('on error', arguments);
-                marker.clear();
-
-                marker = doc.markText(from, to, {
-                    className: "cm-error"
-                });
-                doc.setCursor(cursor);
-            });
+            AutoPreviewConf.img.createMarker(doc, match, from, to);
         }
     }
 });

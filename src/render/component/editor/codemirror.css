@@ -340,12 +340,12 @@ div.CodeMirror-dragcursors {
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext { background: none; }
 
+/* -- */
+
 .img{
   border: 1px solid #ddd;
   mix-blend-mode: darken;
 }
-
-/* -- */
 
 .CodeMirror .CodeMirror-code .cm-header-1 {
     font-size: 200%;
