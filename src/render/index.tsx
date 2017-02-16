@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import DevTools from './container/dev-tools';
 
-import { App } from './component/app/app';
+import { AppContainer } from './container/app-container';
 import { logger } from '../common/logger';
 import { store } from './redux/store/store';
 
@@ -19,7 +19,7 @@ import 'normalize.css/normalize.css';
 ReactDOM.render(
     <Provider store={store}>
         <div>
-            <App store={store} path="/Users/mazhibin/project/xxx/demonote"></App>
+            <AppContainer/>
             {/*<DevTools />*/}
         </div>
     </Provider>,

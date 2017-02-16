@@ -40,18 +40,12 @@ export class Editor extends React.Component<EditorProps, undefined>{
     componentWillReceiveProps(nextProps: EditorProps, nextContext: any) {
         // logger.ui/(`Editor:componentWillReceiveProps nextProps=${nextProps} nextContext=${nextContext}`, nextProps, nextContext);
 
-        this.codeMirror.swapDocByUrl({
-            url: AppState.docCursor(nextProps.doc).getCurrentDocUrl(),
-            mode: 'gfm',
-            content: AppState.docCursor(nextProps.doc).getCurrentDocContent(),
-            newDocSwapCallback: (cm, doc) => {
-                cm.mmAutoPreview();
-            }
-        });
+        let cursor = AppState.docCursor(nextProps.doc)
+        this.swapDoc(cursor.getCurrentDocUrl(),cursor.getCurrentDocContent());
     }
 
     componentDidMount() {
-        let options: {
+        let options = {
             mode: 'gfm',
             // theme: 'base-16-light'
             theme: 'default',
@@ -74,6 +68,21 @@ export class Editor extends React.Component<EditorProps, undefined>{
         });
 
         this.codeMirror.registerPasteImage();
+
+        // init doc
+        let cursor = AppState.docCursor(this.props.doc)
+        this.swapDoc(cursor.getCurrentDocUrl(),cursor.getCurrentDocContent());
+    }
+
+    swapDoc(url:string,content:string){
+        this.codeMirror.swapDocByUrl({
+            url: url,
+            mode: 'gfm',
+            content: content,
+            newDocSwapCallback: (cm, doc) => {
+                cm.mmAutoPreview();
+            }
+        });
     }
 
     printCursor() {

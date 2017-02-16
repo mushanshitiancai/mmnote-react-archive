@@ -29,7 +29,7 @@ export class CommandExecutor {
         });
     }
 
-    execCommand(command: string, args: any) {
+    execCommand(command: string, args?: any) {
         logger.info(`CommandExecutor - execCommand cmd= ${command} args=${args}`);
 
         // exec

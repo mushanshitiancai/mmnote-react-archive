@@ -35,6 +35,10 @@ class DocCursor {
         return this.getCurrentDoc().get('content');
     }
 
+    getCurrentDocIsSaved(): boolean{
+        return !!this.getCurrentDoc().get('isSaved');
+    }
+
     getDocs(): StateType {
         return this.cursor.get('docs');
     }
@@ -48,7 +52,9 @@ export class AppState {
     static initState: StateType = fromJS({
         doc: {
             currentDocUrl: null,
-            docs: {}
+            docs: {
+                // 'url': { url:string , content: string, isSaved: boolean}
+            }
         }
     });
 

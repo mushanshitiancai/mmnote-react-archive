@@ -19,7 +19,7 @@ export const store = createStore(
     compose(
         applyMiddleware(
             thunkMiddleware,
-            loggerMiddleware
+            // loggerMiddleware
         ),
         // DevTools.instrument()
     )

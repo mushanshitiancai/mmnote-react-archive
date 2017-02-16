@@ -1,10 +1,11 @@
+import { ALL_COMMANDS } from '../../../common/command';
 import * as React from 'react';
 import { remote, ipcRenderer } from 'electron';
 import * as SplitPane from 'react-split-pane';
 import * as fs from 'fs';
 import { Store } from 'redux';
 
-import { AppState } from '../../redux/store/state';
+import { AppState, StateType } from '../../redux/store/state';
 import { openAction } from '../../redux/action/action';
 import { EditorContainer } from '../../container/editor-container';
 import { CommandExecutor } from '../../service/command-executor';
@@ -16,26 +17,36 @@ import { Welcome } from '../../component/control/control';
 import './app.less';
 import './resizer.less';
 
-interface IAppProps {
+export interface IAppProps {
+    state?: StateType
     path?: string;
-    store: Store<any>
 }
 
-interface IAppState {
+export interface IAppState {
     curFolders?: TreeNode[];
     curContent?: string;
 }
 
 export class App extends React.Component<IAppProps, IAppState>{
+    static contextTypes = { store: React.PropTypes.object };
 
     private commandExecutor: CommandExecutor;
 
-    constructor(props: IAppProps) {
-        super(props);
+    private welcome = [
+        { label: "Create NoteBook", command: ALL_COMMANDS.open },
+        { label: "Open Note", command: ALL_COMMANDS.open }
+    ];
+
+    onWelcomeClick = (command: string) => {
+        this.commandExecutor.execCommand(command);
+    }
+
+    constructor(props: IAppProps, context: any) {
+        super(props, context);
         // console.log("App constructor", this.props, this.context);
 
         // init dep
-        this.commandExecutor = new CommandExecutor(this, this.props.store);
+        this.commandExecutor = new CommandExecutor(this, this.context.store);
 
         if (props.path) {
             let curNode = new TreeNode(FSTreeService.getNode(this.props.path));
@@ -56,7 +67,7 @@ export class App extends React.Component<IAppProps, IAppState>{
         // this.setState({
         //     curFolders: [new TreeNode(FSTreeService.getNode(paths[0]))]
         // });
-        this.props.store.dispatch(openAction(paths[0]));
+        this.context.store.dispatch(openAction(paths[0]));
     }
 
     onTreeItemClick = (item: TreeNode) => {
@@ -82,13 +93,32 @@ export class App extends React.Component<IAppProps, IAppState>{
         }
     }
 
+    getState(): StateType {
+        return this.context.store.getState();
+    }
+
+    renderTitle() {
+        let state = this.getState();
+        let docCursor = AppState.docCursor(state)
+        if(docCursor.isOpenDoc()){
+            let unSaveSign = docCursor.getCurrentDocIsSaved() ? "" : "*"
+            document.title = `MMNote - ${unSaveSign}${docCursor.getCurrentDocUrl()}`
+        }else{
+            document.title = "MMNote"
+        }
+    }
+
     render() {
-        let state = this.props.store.getState();
+        console.log("re render");
+
+        this.renderTitle();
+
+        let state = this.context.store.getState();
 
         return <div className="app">
             {AppState.docCursor(state).isOpenDoc()
                 ? <EditorContainer />
-                : <Welcome />
+                : <Welcome actions={this.welcome} onClick={(action) => { this.onWelcomeClick(action) }} />
             }
 
             {/*<SplitPane split="vertical" minSize={50} defaultSize={200}>
