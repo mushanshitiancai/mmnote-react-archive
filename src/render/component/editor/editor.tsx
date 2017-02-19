@@ -49,6 +49,7 @@ export class Editor extends React.Component<EditorProps, undefined>{
             mode: 'gfm',
             // theme: 'base-16-light'
             theme: 'default',
+            lineWrapping: true,
             extraKeys: { "Enter": "newlineAndIndentContinueMarkdownList" }
         }
         this.codeMirror = CodeMirror.fromTextArea(this.refs["textarea"] as HTMLTextAreaElement, options);

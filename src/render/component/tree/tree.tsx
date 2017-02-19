@@ -1,80 +1,44 @@
+import { AppState, StateType } from '../../redux/store/state';
 import { logger } from '../../../common/logger';
-import { TreeItem } from './tree-item';
+import { TreeItemContainer } from './tree-item';
 import * as React from 'react';
 import './tree.less';
 import * as fs from 'fs';
 import { FSNode } from '../../service/tree-service';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-export class TreeNode extends FSNode {
-    isSelected: boolean = false;
-    isUnfolded: boolean = false;
-    children: TreeNode[] = [];
-
-    constructor(node: FSNode) {
-        super(node.path, node.stats);
-    }
-}
-
-export interface TreeProps {
-    items: TreeNode[];
-    onItemClick(item: TreeNode): void;
-}
-
-interface TreeState {
-    items: TreeNode[];
+export interface ITreeProps {
+    tree?: StateType;
+    onItemClick?(nodeUrl: string): void;
 }
 
 /**
  * 目录树控件
- * 
- * @export
- * @class Tree
- * @extends {React.Component<TreeProps, TreeState>}
  */
-export class Tree extends React.Component<TreeProps, TreeState>{
-    selectedItems: TreeNode[] = [];
+export class Tree extends React.Component<ITreeProps, undefined>{
 
-    constructor(props: TreeProps) {
+    constructor(props: ITreeProps) {
         super(props);
-
-        this.state = {
-            items: this.props.items
-        }
-    }
-
-    componentWillReceiveProps(nextProps: TreeProps, nextContext: any): void {
-        logger.ui(`Tree:componentWillReceiveProps nextProps=${nextProps} nextContext=${nextContext}`,nextProps,nextContext);
-        this.setState({
-            items: nextProps.items
-        });
-    }
-
-    onItemClick = (item: TreeNode) => {
-        item.isUnfolded = !item.isUnfolded;
-        item.isSelected = true;
-
-        if (item.isSelected) {
-            this.selectedItems.map((i) => {
-                if (item !== i) {
-                    i.isSelected = false;
-                }
-            });
-            this.selectedItems.length = 0;
-
-            this.selectedItems.push(item);
-        }
-
-        this.props.onItemClick(item);
-        this.setState(this.state);
     }
 
     render() {
+        let topNodeCursor = AppState.treeCursor(this.props.tree).getTopNodeCursor()
+
         return <ol className="tree">
-            {
-                this.state.items && this.state.items.map((item, i) => {
-                    return <TreeItem item={item} onItemClick={this.onItemClick} key={i}></TreeItem>
-                })
-            }
+            {topNodeCursor && <TreeItemContainer nodeUrl={topNodeCursor.getUrl()} />}
         </ol>
     }
 }
+
+export const TreeContainer = connect(
+    function (state: StateType, ownProps: ITreeProps): ITreeProps {
+        return {
+            tree: AppState.treeCursor(state).get()
+        }
+    }, function (dispatch): ITreeProps {
+        return bindActionCreators({
+            // onItemClick: treeNodeClickAction
+        }, dispatch);
+    }
+)(Tree);

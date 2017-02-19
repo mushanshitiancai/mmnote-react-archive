@@ -2,6 +2,10 @@ import { logger } from '../../common/logger';
 import * as fs from 'fs-extra';
 import * as toBuffer from 'blob-to-buffer';
 
+export const enum NodeType {
+    File, Folder, Other
+}
+
 
 export class FileUtil {
 
@@ -24,5 +28,15 @@ export class FileUtil {
                 }
             });
         });
+    }
+
+    static getNodeTypeFromStats(stats: fs.Stats) {
+        if (stats.isFile()) {
+            return NodeType.File;
+        } else if (stats.isDirectory()) {
+            return NodeType.Folder
+        } else {
+            return NodeType.Other
+        }
     }
 }

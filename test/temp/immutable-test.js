@@ -1,5 +1,14 @@
 const {Map, fromJS, Record} = require('immutable');
 var Cursor = require('immutable/contrib/cursor');
+let log = console.log;
+
+// -- merge test
+let a = fromJS([[1,2],1,3,4]);
+
+log(a)
+log(a.set(1))
+log(a.merge([9,2])) //<-- 使用index来merge，而不是值
+// -- old
 
 /*
 let a = fromJS({
@@ -8,8 +17,6 @@ let a = fromJS({
         data: 'a data'
     }
 })
-
-let log = console.log;
 
 log(a);
 log(a.get('docs'));

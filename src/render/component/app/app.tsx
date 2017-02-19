@@ -1,3 +1,4 @@
+import { TreeItem, TreeItemContainer } from '../tree/tree-item';
 import { ALL_COMMANDS } from '../../../common/command';
 import * as React from 'react';
 import { remote, ipcRenderer } from 'electron';
@@ -10,7 +11,7 @@ import { openAction } from '../../redux/action/action';
 import { EditorContainer } from '../../container/editor-container';
 import { CommandExecutor } from '../../service/command-executor';
 import { logger } from '../../../common/logger';
-import { Tree, TreeNode } from '../tree/tree';
+import { TreeContainer } from '../tree/tree';
 import { FSNode, FSTreeService } from '../../service/tree-service';
 import { Welcome } from '../../component/control/control';
 
@@ -19,15 +20,9 @@ import './resizer.less';
 
 export interface IAppProps {
     state?: StateType
-    path?: string;
 }
 
-export interface IAppState {
-    curFolders?: TreeNode[];
-    curContent?: string;
-}
-
-export class App extends React.Component<IAppProps, IAppState>{
+export class App extends React.Component<IAppProps, undefined>{
     static contextTypes = { store: React.PropTypes.object };
 
     private commandExecutor: CommandExecutor;
@@ -48,49 +43,11 @@ export class App extends React.Component<IAppProps, IAppState>{
         // init dep
         this.commandExecutor = new CommandExecutor(this, this.context.store);
 
-        if (props.path) {
-            let curNode = new TreeNode(FSTreeService.getNode(this.props.path));
-            console.log(curNode);
-            this.state = {
-                curFolders: [curNode]
-            }
-        } else {
-            this.state = {
-                curFolders: []
-            }
-        }
-
         // this.props.store.dispatch(openAction('/Users/mazhibin/project/xxx/demonote/hehe.md'));
     }
 
     open(paths: string[]) {
-        // this.setState({
-        //     curFolders: [new TreeNode(FSTreeService.getNode(paths[0]))]
-        // });
         this.context.store.dispatch(openAction(paths[0]));
-    }
-
-    onTreeItemClick = (item: TreeNode) => {
-        if (item.isFile()) {
-            if (item.content === null) {
-                fs.readFile(item.path, 'utf-8', (err, data) => {
-                    if (err) {
-                        logger.error(`App:onTreeItemClick load file error=${err}`);
-                        return;
-                    }
-
-                    this.setState({
-                        curContent: data
-                    });
-                });
-            }
-        } else {
-            FSTreeService.getSubNode(item, () => {
-
-            }, () => {
-                this.setState(this.state);
-            });
-        }
     }
 
     getState(): StateType {
@@ -100,35 +57,33 @@ export class App extends React.Component<IAppProps, IAppState>{
     renderTitle() {
         let state = this.getState();
         let docCursor = AppState.docCursor(state)
-        if(docCursor.isOpenDoc()){
+        if (docCursor.isOpenDoc()) {
             let unSaveSign = docCursor.getCurrentDocIsSaved() ? "" : "*"
             document.title = `MMNote - ${unSaveSign}${docCursor.getCurrentDocUrl()}`
-        }else{
+        } else {
             document.title = "MMNote"
         }
     }
 
     render() {
-        console.log("re render");
+        console.log("app re render");
 
         this.renderTitle();
 
         let state = this.context.store.getState();
 
         return <div className="app">
-            {AppState.docCursor(state).isOpenDoc()
-                ? <EditorContainer />
-                : <Welcome actions={this.welcome} onClick={(action) => { this.onWelcomeClick(action) }} />
-            }
-
-            {/*<SplitPane split="vertical" minSize={50} defaultSize={200}>
+            <SplitPane split="vertical" minSize={50} defaultSize={200}>
                 <div className="left">
-                    <Tree items={this.state.curFolders} onItemClick={this.onTreeItemClick}>app</Tree>
+                    <TreeContainer />
                 </div>
                 <div className="right">
-                    <EditorContainer />
+                    {AppState.docCursor(state).isOpenDoc()
+                        ? <EditorContainer />
+                        : <Welcome actions={this.welcome} onClick={(action) => { this.onWelcomeClick(action) }} />
+                    }
                 </div>
-            </SplitPane>*/}
+            </SplitPane>
         </div>
     }
 }

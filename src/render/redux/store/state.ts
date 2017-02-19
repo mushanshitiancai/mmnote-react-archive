@@ -1,9 +1,21 @@
+import { NodeType } from '../../util/file-util';
 import { Map, fromJS, Record } from 'immutable';
 import Cursor = require('immutable/contrib/cursor');
 
 export type StateType = Map<string, any>;
 
-class DocCursor {
+class BaseCursor {
+    cursor: Cursor.Cursor;
+
+    constructor(cursor: Cursor.Cursor) {
+        this.cursor = cursor;
+    }
+    get(): StateType {
+        return this.cursor.deref();
+    }
+}
+
+class DocCursor extends BaseCursor {
 
     static create(state: StateType, onChange?: (newValue: any, oldValue?: any, keyPath?: Array<any>) => any): DocCursor {
         let keyPath: string[] = [];
@@ -13,14 +25,8 @@ class DocCursor {
         return new DocCursor(Cursor.from(state, keyPath, onChange));
     }
 
-    cursor: Cursor.Cursor;
-
     constructor(cursor: Cursor.Cursor) {
-        this.cursor = cursor;
-    }
-
-    get(): StateType {
-        return this.cursor.deref();
+        super(cursor);
     }
 
     getCurrentDoc(): StateType {
@@ -35,7 +41,7 @@ class DocCursor {
         return this.getCurrentDoc().get('content');
     }
 
-    getCurrentDocIsSaved(): boolean{
+    getCurrentDocIsSaved(): boolean {
         return !!this.getCurrentDoc().get('isSaved');
     }
 
@@ -43,40 +49,123 @@ class DocCursor {
         return this.cursor.get('docs');
     }
 
-    isOpenDoc():boolean{
+    isOpenDoc(): boolean {
         return !!this.getCurrentDocUrl();
     }
 }
 
-export class AppState {
-    static initState: StateType = fromJS({
-        doc: {
-            currentDocUrl: null,
-            docs: {
-                // 'url': { url:string , content: string, isSaved: boolean}
+class TreeCursor extends BaseCursor {
+    static create(state: StateType, onChange?: (newValue: any, oldValue?: any, keyPath?: Array<any>) => any): TreeCursor {
+        let keyPath: string[] = [];
+        if (state.has('tree')) {
+            keyPath = ['tree']
+        }
+        return new TreeCursor(Cursor.from(state, keyPath, onChange));
+    }
+
+    constructor(cursor: Cursor.Cursor) {
+        super(cursor);
+    }
+
+    getNodeCurosr(url: string): TreeNodeCursor {
+        return TreeNodeCursor.create(this.cursor.getIn(['nodes', url]))
+    }
+
+    getTopNodeCursor(): TreeNodeCursor {
+        return this.getNodeCurosr(this.cursor.get('topNodeUrl'))
+    }
+
+    getSelectedNodeCursor(): TreeNodeCursor {
+        return this.getNodeCurosr(this.cursor.get('selectedNodeUrl'))
+    }
+}
+
+class TreeNodeCursor extends BaseCursor {
+    static create(state: StateType, onChange?: (newValue: any, oldValue?: any, keyPath?: Array<any>) => any): TreeNodeCursor {
+        if (!state) return null;
+        let keyPath: string[] = [];
+        return new TreeNodeCursor(Cursor.from(state, keyPath, onChange));
+    }
+
+    constructor(cursor: Cursor.Cursor) {
+        super(cursor);
+    }
+
+    getName(): string {
+        return this.cursor.get('name');
+    }
+
+    getUrl(): string {
+        return this.cursor.get('url');
+    }
+
+    getType(): NodeType {
+        return this.cursor.get('type');
+    }
+
+    getIsUnfolded(): boolean {
+        return !!this.cursor.get('isUnfolded');
+    }
+
+    getIsSelected(): boolean {
+        return !!this.cursor.get('isSelected');
+    }
+
+    getIsLoaded(): boolean {
+        return !!this.cursor.get('isLoaded');
+    }
+
+    getChildUrls(): string[] {
+        return this.cursor.get('childUrls');
+    }
+}
+
+interface IAppState {
+    doc: {
+        currentDocUrl: string | null;
+        docs: {
+            [url: string]: {
+                url: string;
+                content: string;
+                isSaved: boolean;
             }
         }
-    });
+    },
+    tree: {
+        topNodeUrl: string | null;
+        selectedNodeUrl: string | null;
+        nodes: {
+            [url: string]: {
+                name: string;
+                url: string;
+                parentUrl: string;
+                type: NodeType;
+                isUnfolded: boolean;
+                isSelected: boolean;
+                isLoaded: boolean;
+                childUrls: string[];
+            }
+        }
+    }
+}
+
+export class AppState {
+    static initStateObj: IAppState = {
+        doc: {
+            currentDocUrl: null,
+            docs: {}
+        },
+        tree: {
+            topNodeUrl: null,
+            selectedNodeUrl: null,
+            nodes: {}
+        }
+    }
+
+    static initState: StateType = fromJS(AppState.initStateObj);
 
     static docCursor = DocCursor.create;
-
-    // static docAccesser = {
-    //     getFromRoot(state: StateType) {
-    //         if (state === AppState.initState)
-    //             return state.get('doc');
-    //     },
-    //     getCurrentDoc(docState: StateType): StateType {
-    //         return docState.getIn(['docs', docState.get('currentDocUrl')]);
-    //     },
-    //     getCurrentDocUrl(docState: StateType): string {
-    //         return docState.get('currentDocUrl');
-    //     },
-    //     getCurrentDocContent(docState: StateType): string {
-    //         return this.getCurrentDoc(docState).get('content');
-    //     },
-    //     getDocs(docState: StateType): StateType {
-    //         return docState.get('docs');
-    //     }
-    // };
+    static treeCursor = TreeCursor.create;
+    static treeNodeCursor = TreeNodeCursor.create;
 }
 

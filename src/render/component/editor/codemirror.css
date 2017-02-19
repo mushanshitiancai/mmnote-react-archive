@@ -345,6 +345,7 @@ span.CodeMirror-selectedtext { background: none; }
 .img{
   border: 1px solid #ddd;
   mix-blend-mode: darken;
+  max-width: 100%;
 }
 
 .CodeMirror .CodeMirror-code .cm-header-1 {

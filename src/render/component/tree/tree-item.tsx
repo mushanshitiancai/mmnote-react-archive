@@ -1,96 +1,91 @@
+import { treeNodeClickAction } from '../../redux/action/action';
+import { NodeType } from '../../util/file-util';
+import { AppState, StateType } from '../../redux/store/state';
 import { logger } from '../../../common/logger';
 import * as React from 'react';
-import { TreeNode } from "./tree"
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 import './tree.less';
 
 interface TreeItemProps {
-    item: TreeNode;
-    onItemClick(item: TreeNode): void;
+    nodeUrl?: string;
+    node?: StateType
+    onItemClick?(url: string): void;
 }
 
-interface TreeItemStat {
-
-}
-
-export class TreeItem extends React.Component<TreeItemProps, TreeItemStat>{
+export class TreeItem extends React.Component<TreeItemProps, undefined>{
     constructor(props: TreeItemProps) {
         super(props);
     }
 
-    componentWillReceiveProps(nextProps: TreeItemProps, nextContext: any): void {
-        logger.ui(`TreeItem:componentWillReceiveProps nextProps=${nextProps} nextContext=${nextContext}`,nextProps,nextContext);
-    }
-
     render(): JSX.Element {
-        const item = this.props.item;
+        const cursor = AppState.treeNodeCursor(this.props.node);
 
         let className = "tree-item";
-        if (item.isFolder()) {
+        if (cursor.getType() === NodeType.Folder) {
             className += " container";
         } else {
             className += " single";
         }
 
-        if (item.isSelected) {
+        if (cursor.getIsSelected()) {
             className += " selected";
         }
 
         let children = null;
+        const childUrls = cursor.getChildUrls();
 
-        if (item.children && item.children.length != 0) {
-            if (item.isUnfolded) {
+        if (childUrls && childUrls.length != 0) {
+            if (cursor.getIsUnfolded()) {
                 children = <ol className="tree-item-children">
-                    {item.children.map((item, i) => <TreeItem item={item} onItemClick={this.props.onItemClick} key={i} />)}
+                    {childUrls.map((url, i) => <TreeItemContainer nodeUrl={url} key={url} />)}
                 </ol>
             }
         }
 
         return <li className={className}>
-            <TreeItemHeader {...this.props} />
+            <TreeItemHeader name={cursor.getName()} nodeType={cursor.getType()} isUnfolded={cursor.getIsUnfolded()} onClick={() => this.props.onItemClick(cursor.getUrl())} />
             {children}
         </li>
     }
 }
 
-interface TreeItemHeaderProps {
-    item: TreeNode;
-    onItemClick(item: TreeNode): void;
-}
-
-interface TreeItemHeaderState {
-
-}
-
-export class TreeItemHeader extends React.Component<TreeItemHeaderProps, TreeItemHeaderState>{
-    constructor(props: TreeItemHeaderProps) {
-        super(props);
-
-    }
-
-    onClick = () => {
-        this.props.onItemClick(this.props.item);
-    }
-
-    render() {
-        let itemClass = "icon fa fa-file";
-        let toggle = null;
-        if (this.props.item.isFolder()) {
-            itemClass = "icon fa fa-folder"
-
-            let toggleClassName = "toggle ";
-            if (this.props.item.isUnfolded) {
-                toggleClassName += "fa fa-caret-down"
-            } else {
-                toggleClassName += "fa fa-caret-right"
-            }
-            toggle = <span className={toggleClassName}></span>
+export const TreeItemContainer = connect(
+    function (state: StateType, ownProps: TreeItemProps): TreeItemProps {
+        return {
+            node: AppState.treeCursor(state).getNodeCurosr(ownProps.nodeUrl).get()
         }
-
-        return <div className="tree-item-header" onClick={this.onClick}>
-            {toggle}
-            <span className={itemClass}></span>
-            <span className="name">{this.props.item.name}</span>
-        </div>
+    }, function (dispatch): TreeItemProps {
+        return bindActionCreators({
+            onItemClick: treeNodeClickAction
+        }, dispatch);
     }
+)(TreeItem);
+
+function TreeItemHeader({name, nodeType, isUnfolded, onClick}: {
+    name: string
+    nodeType: NodeType,
+    isUnfolded: boolean,
+    onClick: () => void
+}) {
+    let itemClass = "icon fa fa-file";
+    let toggle = null;
+    if (nodeType === NodeType.Folder) {
+        itemClass = "icon fa fa-folder"
+
+        let toggleClassName = "toggle ";
+        if (isUnfolded) {
+            toggleClassName += "fa fa-caret-down"
+        } else {
+            toggleClassName += "fa fa-caret-right"
+        }
+        toggle = <span className={toggleClassName}></span>
+    }
+
+    return <div className="tree-item-header" onClick={onClick}>
+        {toggle}
+        <span className={itemClass}></span>
+        <span className="name">{name}</span>
+    </div>
 }

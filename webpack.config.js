@@ -35,5 +35,10 @@ module.exports = {
         ]
     },
 
+    plugins: [
+        // https://github.com/kevinbeaty/any-promise/issues/27
+        new webpack.NormalModuleReplacementPlugin(/^any\-promise$/, 'bluebird'),
+    ],
+
     target: 'electron'
 }
