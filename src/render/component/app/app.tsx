@@ -14,6 +14,7 @@ import { logger } from '../../../common/logger';
 import { TreeContainer } from '../tree/tree';
 import { FSNode, FSTreeService } from '../../service/tree-service';
 import { Welcome } from '../../component/control/control';
+import { Minder } from '../../component/minder/minder';
 
 import './app.less';
 import './resizer.less';
@@ -43,7 +44,7 @@ export class App extends React.Component<IAppProps, undefined>{
         // init dep
         this.commandExecutor = new CommandExecutor(this, this.context.store);
 
-        // this.props.store.dispatch(openAction('/Users/mazhibin/project/xxx/demonote/hehe.md'));
+        this.context.store.dispatch(openAction('/Users/mazhibin/project/xxx/demonote/hehe.md'));
     }
 
     open(paths: string[]) {
@@ -73,7 +74,13 @@ export class App extends React.Component<IAppProps, undefined>{
         let state = this.context.store.getState();
 
         return <div className="app">
-            <SplitPane split="vertical" minSize={50} defaultSize={200}>
+            <Minder />
+
+            {/*{AppState.docCursor(state).isOpenDoc()
+                        ? <EditorContainer />
+                        : <Welcome actions={this.welcome} onClick={(action) => { this.onWelcomeClick(action) }} />
+                    }*/}
+            {/*<SplitPane split="vertical" minSize={50} defaultSize={200}>
                 <div className="left">
                     <TreeContainer />
                 </div>
@@ -83,7 +90,7 @@ export class App extends React.Component<IAppProps, undefined>{
                         : <Welcome actions={this.welcome} onClick={(action) => { this.onWelcomeClick(action) }} />
                     }
                 </div>
-            </SplitPane>
+            </SplitPane>*/}
         </div>
     }
 }

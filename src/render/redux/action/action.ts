@@ -35,7 +35,8 @@ export function openAction(path: string) {
             } else if (stats.isDirectory()) {
                 dispatch(openFolderAction(path));
             }
-        }).catch(sendFailAction(dispatch, ACT_OPEN_FAIL));;
+            return null;
+        }).catch(sendFailAction(dispatch, ACT_OPEN_FAIL));
     }
 }
 
@@ -56,6 +57,7 @@ export function openFileAction(path: string) {
                     content: data
                 }
             });
+            return null;
         }).catch(sendFailAction(dispatch, ACT_OPEN_FILE_FAIL));;
     }
 }
@@ -146,7 +148,6 @@ export function treeNodeLoadChildrenAction(nodeUrl: string) {
                     }))
                 })
             })
-
 
         })
     }

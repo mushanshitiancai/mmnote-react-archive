@@ -19,18 +19,19 @@ const AutoPreviewConf = {
         createMarker: function (doc: CodeMirror.Doc, match: RegExpExecArray | null, from: CodeMirror.Position, to: CodeMirror.Position) {
             // TODO deal link
             let link = match[2];
-            if(!isUrl(link)){
-               link = URLUtil.pathToURL(link);
+            if (!isUrl(link)) {
+                link = URLUtil.pathToURL(link);
             }
 
             let img = $('<img/>', {
-                class: 'cm-img',
+                class: 'autopreview-img',
                 src: link
             });
 
             let cursor = doc.getCursor();
             let marker = doc.markText(from, to, {
-                replacedWith: img.get(0)
+                replacedWith: img.get(0),
+                handleMouseEvents: true
             });
 
             img.on('load', () => {
